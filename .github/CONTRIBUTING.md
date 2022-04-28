@@ -7,7 +7,7 @@ First off, thank you for taking the time to contribute to Vidstack ❤️
 - Code is written in [TypeScript][typescript].
 - Apps are built with [SvelteKit][svelte-kit].
 - We use [Lit][lit] to build [Web Components][web-components].
-- [Turborepo][turborepo] makes our monorepo go vroom!
+- [Wirekit][wirekit] makes our scripts go vroom!
 
 ## 🎒 Getting Started
 
@@ -63,10 +63,10 @@ it will automatically pin it, and if you're using `nvm` simply run `nvm use` fro
 $: pnpm i
 
 # Install dependency for a single package.
-$: pnpm install {package} --filter @vidstack/player
+$: pnpm install {package} --filter player
 
 # Update a dependency for a single package.
-$: pnpm up {package} --filter @vitebook/player
+$: pnpm up {package} --filter player
 
 # Update a dependency for all packages.
 $: pnpm up {package}@{version} -r
@@ -75,29 +75,29 @@ $: pnpm up {package}@{version} -r
 ## 🏗 Building
 
 ```bash
-# Build all packages (turbo)
+# Build all packages
 $: pnpm build
 
-# Build all apps (turbo)
+# Build all apps
 $: pnpm build:app
 
 # Build single package
-$: pnpm build --filter @vidstack/player
+$: pnpm build --filter player
 
 # Build single app
 $: pnpm build:app --filter vidstack.io
 
 # Build and watch single package
-$: pnpm watch --filter @vidstack/player
+$: pnpm watch --filter player
 ```
 
 ## 💻 Development
 
 ```bash
-# Run workspace in dev mode (turbo)
-$: pnpm dev
+# Run package in dev mode
+$: pnpm dev --filter player
 
-# Run single app in dev mode
+# Run app in dev mode
 $: pnpm dev --filter vidstack.io
 ```
 
@@ -109,10 +109,10 @@ it.
 
 ```bash
 # Play with `@vidstack/foundation` package in your browser.
-$: pnpm sandbox --filter @vidstack/foundation
+$: pnpm sandbox --filter foundation
 
 # Play with `@vidstack/player` package in your browser.
-$: pnpm sandbox --filter @vidstack/player
+$: pnpm sandbox --filter player
 ```
 
 After running any of the commands above, you can find the sandbox directory at `packages/*/sandbox`.
@@ -126,14 +126,14 @@ project uses [Vitest][vitest] for writing/running unit tests. To learn more abou
 tests, follow the link to the Vitest site, and see other tests in the repo.
 
 ```bash
-# Run all tests (turbo)
+# Run all tests
 $: pnpm test
 
 # Run tests in single package
-$: pnpm test --filter @vidstack/player
+$: pnpm test --filter player
 
 # Run tests in watch mode for a single package
-$: pnpm test:watch --filter @vidstack/player
+$: pnpm test:watch --filter player
 ```
 
 ## ✍️ Committing
@@ -155,7 +155,7 @@ contribution is appreciated more then you can imagine, and even a failed PR can 
 [semantic-commit-style]: https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716
 [svelte]: https://svelte.dev
 [svelte-kit]: https://kit.svelte.dev
-[turborepo]: https://turborepo.org
+[wirekit]: https://github.com/google/wireit
 [typescript]: https://www.typescriptlang.org
 [vidstack-gh]: https://github.com/vidstack/vidstack
 [vitest]: https://vitest.dev

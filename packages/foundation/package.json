@@ -33,19 +33,102 @@
     "url": "https://github.com/vidstack/vidstack/issues"
   },
   "scripts": {
-    "build": "pnpm clean && run-p build:dist build:types",
-    "build:dist": "rollup -c",
-    "build:types": "tsc -p tsconfig.json && pnpm build:types:dist && rimraf types dist/foundation.d.ts",
-    "build:types:dist": "api-extractor run",
+    "build": "wireit",
+    "build:dist": "wireit",
+    "build:types": "wireit",
+    "types:extract": "wireit",
     "clean": "rimraf dist dist-node dist-prod types",
-    "dev": "pnpm build:dist -- -w",
+    "dev": "pnpm build watch",
     "watch": "pnpm dev",
-    "lint:eslint": "eslint src --fix",
-    "lint:prettier": "prettier src --write --loglevel warn",
     "sandbox": "pnpm sandbox:prepare && vite --open /sandbox/index.html --port 3090",
     "sandbox:prepare": "node ../../.scripts/copy.js --entry=.templates/sandbox --outdir=sandbox --overwrite=false",
-    "test": "vitest --run",
+    "test": "wireit",
     "test:watch": "vitest --watch"
+  },
+  "wireit": {
+    "build": {
+      "dependencies": [
+        "build:dist",
+        "types:extract"
+      ]
+    },
+    "build:dist": {
+      "files": [
+        "src/**",
+        "tsconfig.json",
+        "rollup.config.mjs",
+        "../rollup/*.js"
+      ],
+      "command": "rollup -c",
+      "output": [
+        "dist/**",
+        "dist-node/**",
+        "dist-prod/**"
+      ],
+      "packageLocks": [
+        "pnpm-lock.yaml"
+      ]
+    },
+    "build:types": {
+      "clean": "if-file-deleted",
+      "files": [
+        "src/**",
+        "tsconfig.json"
+      ],
+      "command": "tsc -p tsconfig.json --pretty",
+      "output": [
+        "types/**",
+        "tsconfig.tsbuildinfo"
+      ],
+      "packageLocks": [
+        "pnpm-lock.yaml"
+      ]
+    },
+    "types:extract": {
+      "dependencies": [
+        "build:types"
+      ],
+      "files": [
+        "types/**",
+        "tsconfig.json"
+      ],
+      "command": "api-extractor run && rimraf dist/**/*.d.ts",
+      "output": [
+        "index.d.ts"
+      ],
+      "packageLocks": [
+        "pnpm-lock.yaml"
+      ]
+    },
+    "lint:eslint": {
+      "files": [
+        "src/**"
+      ],
+      "command": "eslint src --fix",
+      "packageLocks": [
+        "pnpm-lock.yaml"
+      ]
+    },
+    "lint:prettier": {
+      "files": [
+        "src/**"
+      ],
+      "command": "prettier src --write --loglevel warn",
+      "packageLocks": [
+        "pnpm-lock.yaml"
+      ]
+    },
+    "test": {
+      "files": [
+        "src/**",
+        "tests/**",
+        "vite.config.ts"
+      ],
+      "command": "vitest --run",
+      "packageLocks": [
+        "pnpm-lock.yaml"
+      ]
+    }
   },
   "dependencies": {
     "@types/fscreen": "^1.0.1",

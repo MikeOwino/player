@@ -13,14 +13,68 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "run-p build:dist build:types",
+    "build": "wireit",
+    "build:dist": "wireit",
+    "build:types": "wireit",
     "build:base": "node ../../.scripts/build.js --entry=src/index.ts",
-    "build:dist": "pnpm build:base -- --outdir=dist-node --platform=node --bundle --requireshim --external=yargs,@vidstack/foundation,typescript",
-    "build:types": "tsc -p tsconfig.json",
     "clean": "rimraf dist-node types",
-    "watch": "run-p \"build:dist -- -w\" \"build:types -- -w\"",
-    "lint:eslint": "eslint src --fix",
-    "lint:prettier": "prettier src --write --loglevel warn"
+    "watch": "pnpm build watch",
+    "lint:eslint": "wireit",
+    "lint:prettier": "wireit"
+  },
+  "wireit": {
+    "build": {
+      "dependencies": [
+        "build:dist",
+        "build:types"
+      ]
+    },
+    "build:dist": {
+      "files": [
+        "src/**",
+        "tsconfig.json"
+      ],
+      "command": "pnpm build:base -- --outdir=dist-node --platform=node --bundle --requireshim --external=yargs,@vidstack/foundation,typescript",
+      "output": [
+        "dist-node/**"
+      ],
+      "packageLocks": [
+        "pnpm-lock.yaml"
+      ]
+    },
+    "build:types": {
+      "clean": "if-file-deleted",
+      "files": [
+        "src/**",
+        "tsconfig.json"
+      ],
+      "command": "tsc -p tsconfig.json --pretty",
+      "output": [
+        "types/**",
+        "tsconfig.tsbuildinfo"
+      ],
+      "packageLocks": [
+        "pnpm-lock.yaml"
+      ]
+    },
+    "lint:eslint": {
+      "files": [
+        "src/**"
+      ],
+      "command": "eslint src --fix",
+      "packageLocks": [
+        "pnpm-lock.yaml"
+      ]
+    },
+    "lint:prettier": {
+      "files": [
+        "src/**"
+      ],
+      "command": "prettier src --write --loglevel warn",
+      "packageLocks": [
+        "pnpm-lock.yaml"
+      ]
+    }
   },
   "dependencies": {
     "@types/fs-extra": "^9.0.13",

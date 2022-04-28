@@ -5,14 +5,46 @@
   "private": true,
   "scripts": {
     "dev": "svelte-kit dev --port 3001 --host",
-    "build:app": "pnpm sync && svelte-kit build",
+    "build:app": "wireit",
     "clean": "rimraf .svelte-kit",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
     "gen:components": "node .scripts/gen-component-files.js",
-    "lint:prettier": "prettier src --write --loglevel warn",
+    "lint:prettier": "wireit",
     "preview": "svelte-kit preview --port 3001",
     "sync": "svelte-kit sync"
+  },
+  "wireit": {
+    "build:app": {
+      "dependencies": [
+        "../../packages/foundation:build",
+        "../../packages/player:build"
+      ],
+      "files": [
+        "src/**",
+        "plugins/**",
+        "svelte.config.js",
+        "tailwind.config.cjs",
+        "tsconfig.json"
+      ],
+      "command": "pnpm sync && svelte-kit build",
+      "output": [
+        "build/**",
+        ".svelte-kit/**"
+      ],
+      "packageLocks": [
+        "pnpm-lock.yaml"
+      ]
+    },
+    "lint:prettier": {
+      "files": [
+        "src/**"
+      ],
+      "command": "prettier src --write --loglevel warn",
+      "packageLocks": [
+        "pnpm-lock.yaml"
+      ]
+    }
   },
   "dependencies": {
     "@docsearch/css": "^3.0.0",

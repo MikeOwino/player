@@ -71,24 +71,203 @@
     "url": "https://github.com/vidstack/vidstack/issues"
   },
   "scripts": {
-    "analyze": "eliza \"src/**/*{events,Element}.ts\"",
-    "build": "pnpm clean && pnpm analyze && run-p build:dist build:types",
-    "build:dist": "rollup -c && pnpm minify:cdn",
-    "build:definitions": "node ../../.scripts/definitions.js",
-    "build:types": "tsc -p tsconfig.json && run-s build:types:* && rimraf types dist/player.d.ts",
-    "build:types:dist": "api-extractor run && pnpm build:definitions",
-    "build:types:react": "api-extractor run -c api-extractor.react.json",
-    "build:types:svelte": "node ./.scripts/build-svelte-types.js && api-extractor run -c api-extractor.svelte.json",
+    "analyze": "wireit",
+    "build": "wireit",
+    "build:dist": "wireit",
+    "build:definitions": "wireit",
+    "build:types": "wireit",
+    "extract:types": "wireit",
+    "extract:types:react": "wireit",
+    "extract:types:svelte": "wireit",
     "clean": "rimraf define dist dist-* types coverage src/react/components src/svelte/{client,node}/components",
-    "dev": "run-p \"pnpm analyze -- -w\" \"pnpm build:dist -- -w\"",
+    "dev": "pnpm build watch",
     "watch": "pnpm dev",
-    "lint:eslint": "eslint src --fix",
-    "lint:prettier": "prettier src --write --loglevel warn",
-    "minify:cdn": "node ../../.scripts/minify.js --entry=dist-cdn/**/*.js --outdir=dist-cdn",
+    "lint:eslint": "wireit",
+    "lint:prettier": "wireit",
+    "minify:cdn": "wireit",
     "sandbox": "pnpm sandbox:prepare && vite --open /sandbox/index.html --port 3091",
     "sandbox:prepare": "node ../../.scripts/copy.js --entry=.templates/sandbox --outdir=sandbox --overwrite=false",
-    "test": "vitest --run",
+    "test": "wireit",
     "test:watch": "vitest --watch"
+  },
+  "wireit": {
+    "analyze": {
+      "dependencies": [
+        "../eliza:build",
+        "../foundation:build:types"
+      ],
+      "files": [
+        "src/**",
+        "tsconfig.json",
+        "eliza.config.ts"
+      ],
+      "command": "eliza \"src/**/*{events,Element}.ts\"",
+      "output": [
+        "react/index.js",
+        "svelte/index.js",
+        "elements.json",
+        "vscode.html-data.json"
+      ],
+      "packageLocks": [
+        "pnpm-lock.yaml"
+      ]
+    },
+    "build": {
+      "dependencies": [
+        "build:dist",
+        "build:definitions",
+        "extract:types",
+        "extract:types:react",
+        "extract:types:svelte",
+        "minify:cdn"
+      ]
+    },
+    "build:dist": {
+      "dependencies": [
+        "analyze"
+      ],
+      "files": [
+        "src/**",
+        "tsconfig.json",
+        "rollup.config.mjs",
+        "../rollup/*.js"
+      ],
+      "command": "rollup -c",
+      "output": [
+        "dist/**",
+        "dist-node/**",
+        "dist-cdn/**",
+        "dist-prod/**"
+      ],
+      "packageLocks": [
+        "pnpm-lock.yaml"
+      ]
+    },
+    "build:types": {
+      "dependencies": [
+        "analyze"
+      ],
+      "clean": "if-file-deleted",
+      "files": [
+        "src/**",
+        "eliza.config.ts",
+        "tsconfig.json",
+        "../eliza/dist-node/**",
+        "../foundation/types/**"
+      ],
+      "command": "tsc -p tsconfig.json --pretty && rimraf dist/**/*.d.ts",
+      "output": [
+        "types/**",
+        "tsconfig.tsbuildinfo"
+      ],
+      "packageLocks": [
+        "pnpm-lock.yaml"
+      ]
+    },
+    "build:definitions": {
+      "dependencies": [
+        "build:types"
+      ],
+      "files": [
+        "src/define/**"
+      ],
+      "command": "node ../../.scripts/definitions.js",
+      "output": [
+        "define/**"
+      ]
+    },
+    "extract:types": {
+      "dependencies": [
+        "build:types"
+      ],
+      "files": [
+        "types/**",
+        "tsconfig.json"
+      ],
+      "command": "api-extractor run",
+      "output": [
+        "index.d.ts"
+      ],
+      "packageLocks": [
+        "pnpm-lock.yaml"
+      ]
+    },
+    "extract:types:react": {
+      "dependencies": [
+        "build:types"
+      ],
+      "files": [
+        "types/**",
+        "tsconfig.json"
+      ],
+      "command": "api-extractor run -c api-extractor.react.json",
+      "output": [
+        "react/index.d.ts"
+      ],
+      "packageLocks": [
+        "pnpm-lock.yaml"
+      ]
+    },
+    "extract:types:svelte": {
+      "dependencies": [
+        "build:types"
+      ],
+      "files": [
+        "types/**",
+        "tsconfig.json"
+      ],
+      "command": "node ./.scripts/build-svelte-types.js && api-extractor run -c api-extractor.svelte.json",
+      "output": [
+        "svelte/index.d.ts"
+      ],
+      "packageLocks": [
+        "pnpm-lock.yaml"
+      ]
+    },
+    "minify:cdn": {
+      "dependencies": [
+        "build:dist"
+      ],
+      "files": [
+        "dist-cdn/**"
+      ],
+      "command": "node ../../.scripts/minify.js --entry=dist-cdn/**/*.js --outdir=dist-cdn",
+      "output": [
+        "dist-cdn/**"
+      ],
+      "packageLocks": [
+        "pnpm-lock.yaml"
+      ]
+    },
+    "lint:eslint": {
+      "files": [
+        "src/**"
+      ],
+      "command": "eslint src --fix",
+      "packageLocks": [
+        "pnpm-lock.yaml"
+      ]
+    },
+    "lint:prettier": {
+      "files": [
+        "src/**"
+      ],
+      "command": "prettier src --write --loglevel warn",
+      "packageLocks": [
+        "pnpm-lock.yaml"
+      ]
+    },
+    "test": {
+      "files": [
+        "src/**",
+        "tests/**",
+        "vite.config.ts"
+      ],
+      "command": "vitest --run",
+      "packageLocks": [
+        "pnpm-lock.yaml"
+      ]
+    }
   },
   "dependencies": {
     "@vidstack/foundation": "workspace:*"
