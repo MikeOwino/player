@@ -103,6 +103,10 @@
       ],
       "command": "eliza \"src/**/*{events,Element}.ts\"",
       "output": [
+        "src/react/index.ts",
+        "src/react/components/**",
+        "src/svelte/{client,node}/index.ts",
+        "src/svelte/{client,node}/components/**",
         "react/index.js",
         "svelte/index.js",
         "elements.json",
