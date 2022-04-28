@@ -30,6 +30,9 @@
       ]
     },
     "build:dist": {
+      "dependencies": [
+        "../foundation:build:dist"
+      ],
       "files": [
         "src/**",
         "tsconfig.json"
@@ -43,6 +46,9 @@
       ]
     },
     "build:types": {
+      "dependencies": [
+        "../foundation:extract:types"
+      ],
       "clean": "if-file-deleted",
       "files": [
         "src/**",

@@ -94,7 +94,7 @@
     "analyze": {
       "dependencies": [
         "../eliza:build",
-        "../foundation:build:types"
+        "../foundation:extract:types"
       ],
       "files": [
         "src/**",
@@ -124,7 +124,8 @@
     },
     "build:dist": {
       "dependencies": [
-        "analyze"
+        "analyze",
+        "../foundation:build:dist"
       ],
       "files": [
         "src/**",
@@ -145,7 +146,8 @@
     },
     "build:types": {
       "dependencies": [
-        "analyze"
+        "analyze",
+        "../foundation:extract:types"
       ],
       "clean": "if-file-deleted",
       "files": [
